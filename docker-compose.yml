@@ -1,0 +1,14 @@
+services:
+    quantum-portfolio-optimization:
+        image: quantum-portfolio-optimization
+        hostname: qpo
+        container_name: qpo
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - ./src:/home/jovyan/src
+            - ./examples:/home/jovyan/examples
+        ports:
+            - 8888:8888
+        command: "start-notebook.sh --NotebookApp.token="
