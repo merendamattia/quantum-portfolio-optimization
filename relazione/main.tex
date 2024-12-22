@@ -13,6 +13,7 @@
 
 % Useful packages
 \usepackage{amssymb}
+\usepackage{amsmath}
 \usepackage{siunitx}
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 \usepackage{cleveref}
@@ -238,9 +239,12 @@
 \begin{document}
 \maketitle
 
+% utilizzato per debug
+% \linenumbers
+
 \input{sections/abstract}
-\linenumbers % utilizzato per debug
 \input{sections/intro}
+\input{sections/problema}
 \input{sections/algoritmi}
 \input{sections/qiskit}
 \input{sections/results}
@@ -250,7 +254,7 @@
 
 \hfill
 
-% \break
-% \printbibliography
+\break
+\printbibliography
 
 \end{document}
