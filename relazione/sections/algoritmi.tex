@@ -1,5 +1,131 @@
 \section{Algoritmi esistenti (QUBU)}\label{sec:algoritmi}
 
 \subsection{VQA}\label{sec:vqa}
-\subsection{VQE}\label{sec:vqe}
+
+
+
+
+\subsection{Variational Quantum Eigensolver}\label{sec:vqe}
+
+Il Variational Quantum Eigensolver (VQE) è un algoritmo ibrido che combina l'uso di 
+computer quantistici e classici per risolvere problemi di ottimizzazione. Il suo 
+funzionamento si basa sul principio variazionale e mira a trovare lo stato di energia 
+minima di un sistema quantistico.
+
+L'idea principale è quella di parametrizzare un circuito quantistico attraverso un 
+insieme di parametri $\theta$ e utilizzare questi parametri per minimizzare l'energia 
+del sistema, definita come:
+
+\begin{equation}\label{eqn:energiaSistema}
+    E(\theta) = \frac{
+                    \langle\psi(\theta)|H|\psi(\theta)\rangle
+                }
+                {
+                    \langle\psi(\theta)|\psi(\theta)\rangle
+                },
+\end{equation}
+
+dove $H$ è l'Hamiltoniano che descrive il nostro problema di ottimizzazione e 
+$\psi(\theta)$ è la funzione d'onda parametrizzata. In particolare, lo stato 
+fondamentale $E_0$ corrisponde allo stato fondamentale (\textit{ground state}) 
+di energia minima: 
+
+\begin{equation}
+    E_0 \le \frac{
+                    \langle\psi(\theta)|H|\psi(\theta)\rangle
+                }
+                {
+                    \langle\psi(\theta)|\psi(\theta)\rangle
+                }.
+\end{equation}
+
+Quindi, il compito del VQE è trovare l'insieme ottimale di parametri, tale che 
+l'energia associata allo stato sia quasi indistinguibile dal suo stato fondamentale, 
+cioè trovare l'insieme di parametri $\theta$, corrispondente all'energia $E_{\min}$, 
+per il quale $|E_{\min} - E_0| < \epsilon$, dove $\epsilon$ è una costante 
+arbitrariamente piccola. Questo problema può essere formulato su un computer 
+quantistico come una serie di gates, che vengono applicate allo stato iniziale 
+per realizzare un ansatz strutturato per il problema Hamiltoniano. 
+
+Convenzionalmente, lo stato iniziale è impostato per essere lo stato di vuoto, i.e., 
+per un sistema di $N$ qubit $|0\rangle^{\otimes N} = |0\rangle$. 
+Quindi, il problema di minimizzare l'energia del sistema (Equazione~\ref{eqn:energiaSistema}) 
+può essere espresso come:
+
+\begin{equation}
+    E_{\min} = \min_{\theta} \langle 0|U^{\dagger}(\theta)HU(\theta)|0\rangle,
+\end{equation}
+
+dove $U(\theta)$ è l'operatore unitario parametrizzato che fornisce la funzione 
+d'onda ansatz quando applicato allo stato iniziale, e $E_{\min}$ è l'energia 
+associata all'ansatz parametrizzato.
+
+Per essere efficientemente implementato in un circuito quantistico, è importante
+che $H$ venga espresso nella forma:
+
+\begin{equation}
+    H = \sum_{l} c_l P_l = \sum_{l} c_l \otimes \sigma_j^i,
+\end{equation}
+
+dove \(P_l\) sono stringhe di Pauli rappresentate dal prodotto tensore degli 
+operatori di Pauli \(\sigma_j^i \in \{I, \sigma_X, \sigma_Y, \sigma_Z\}\), 
+con \(j\) che denota il qubit su cui l'operatore agisce e \(i\) il termine 
+dell'Hamiltoniano. I coefficienti \(c_l\) sono pesi reali o complessi, 
+adeguati per definire l'Hamiltoniano specifico del problema. In questa 
+rappresentazione, l'Hamiltoniano è espresso come una combinazione lineare 
+di stringhe di Pauli.
+
+Quindi, l'obiettivo del VQE è risolvere il seguente problema di ottimizzazione:
+
+\begin{equation}
+    E_{\text{min}} = \min_\theta \sum_{l} c_l \langle 0 | U^\dagger(\theta) P_l U(\theta) | 0 \rangle.
+\end{equation}
+
+In questo contesto, si cerca lo stato \(|\psi(\theta)\rangle\) che corrisponde 
+allo stato fondamentale di \(H\).
+
+Il calcolo del valore atteso di una stringa di Pauli \(P_l\) è essenziale. 
+Questo valore è ottenuto misurando ogni qubit coinvolto nella stringa \(P_l\), 
+operando nella base di misura adeguata. Ad esempio, per uno stato generico del 
+tipo \(|\psi\rangle = \alpha |0\rangle + \beta |1\rangle\), il valore atteso 
+sull'operatore di Pauli \(\sigma_Z\) è dato da:
+
+\begin{equation}
+    \langle \psi | \sigma_Z | \psi \rangle = |\alpha|^2 - |\beta|^2.
+\end{equation}
+
+Questo valore rappresenta la probabilità di osservare lo stato \(|0\rangle\) meno 
+la probabilità di osservare lo stato \(|1\rangle\). Misure relative a \(\sigma_X\) 
+o \(\sigma_Y\) richiedono una rotazione preliminare nella base di misura \(\sigma_Z\).
+
+Dato che i risultati delle misurazioni quantistiche sono binari, è necessario 
+ripetere l'esperimento più volte per approssimare al meglio il valore medio 
+di ogni termine. Questo processo è ripetuto separatamente per ogni stringa 
+\(P_l\) che compone l'Hamiltoniano.
+
+L'approccio VQE mira a bilanciare la complessità del circuito quantistico con il 
+numero di misurazioni richieste, permettendo un'ottimizzazione efficiente degli 
+stati parametrizzati. Il processo di ottimizzazione avviene in modo iterativo. 
+Inizialmente, il computer quantistico prepara uno stato quantistico utilizzando 
+i parametri correnti. Successivamente, viene misurata l'energia di questo stato 
+preparato. Sulla base di questa misura, un ottimizzatore classico aggiorna i 
+parametri nel tentativo di minimizzare l'energia del sistema. Questo ciclo di 
+preparazione, misurazione e aggiornamento viene ripetuto fino a raggiungere la 
+convergenza, ovvero fino a quando l'energia non può essere ulteriormente 
+minimizzata in modo significativo.
+
+Questo approccio ibrido sfrutta i punti di forza di entrambe le tipologie di 
+computer: il computer quantistico si occupa della preparazione e della misurazione 
+degli stati quantistici, mentre il computer classico gestisce l'ottimizzazione 
+dei parametri. Nel contesto dell'ottimizzazione di portafoglio, il VQE viene 
+impiegato per trovare la configurazione ottimale degli asset che minimizza una 
+funzione obiettivo, tenendo conto sia del rischio che del rendimento atteso.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/vqe.png}
+    \caption{Schema del funzionamento del Variational Quantum Eigensolver~\cite{buonaiuto2023best}.}
+\end{figure}
+
+
 \subsection{QAOA}\label{sec:qaoa}
