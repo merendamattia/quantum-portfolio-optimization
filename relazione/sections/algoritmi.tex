@@ -1,7 +1,66 @@
-\section{Algoritmi esistenti (QUBU)}\label{sec:algoritmi}
+\section{Quadratic Unconstrained Binary Optimization}\label{sec:algoritmi}
 
-\subsection{VQA}\label{sec:vqa}
+I problemi Quadratic Unconstrained Binary Optimization (QUBO) rappresentano una 
+classe fondamentale di problemi di ottimizzazione in cui si cerca di minimizzare 
+(o massimizzare) una funzione quadratica con variabili binarie, cioè variabili 
+che possono assumere solo i valori 0 o 1. Ciò che rende i QUBO particolarmente 
+interessanti è il fatto che molti problemi complessi di ottimizzazione possono 
+essere riformulati in questo formato.
 
+La caratteristica principale dei QUBO è la loro semplicità strutturale: sono 
+problemi non vincolati, il che significa che l'unico vincolo è la natura binaria 
+delle variabili. Nonostante questa apparente semplicità, i QUBO sono problemi 
+NP-completi, il che significa che sono computazionalmente difficili da risolvere 
+con metodi classici quando la dimensione del problema cresce.
+
+L'importanza dei QUBO nel contesto del calcolo quantistico deriva dalla loro 
+versatilità. Infatti, possiamo utilizzarli per risolvere una vasta gamma di 
+problemi pratici come:
+
+\begin{itemize}
+    \item la colorazione dei grafi, dove si cerca di assegnare colori a nodi di 
+        un grafo in modo che nodi adiacenti abbiano colori diversi;
+    \item il partizionamento di numeri, dove si cerca di dividere un insieme di 
+        numeri in gruppi con somma simile;
+    \item l'ottimizzazione di portafoglio finanziario, dove si cerca di bilanciare 
+        rischio e rendimento;
+\end{itemize}
+
+Nel contesto degli algoritmi quantistici come il VQE e il QAOA, i problemi QUBO sono 
+particolarmente adatti perché la loro struttura si traduce naturalmente in termini 
+di interazioni tra qubit. Questa caratteristica li rende ideali per 
+l'implementazione su computer quantistici, dove le interazioni tra qubit possono 
+essere controllate e manipolate per trovare soluzioni ottimali.
+
+\mmerenda{
+Il collegamento tra i problemi QUBO e gli algoritmi quantistici come VQE e QAOA 
+è particolarmente interessante. Per utilizzare questi algoritmi quantistici, 
+il primo passo consiste nel mappare il problema QUBO in un Hamiltoniano quantistico. 
+Questa mappatura viene realizzata traducendo le variabili binarie classiche 
+$x_i$ in operatori di Pauli-Z, dove lo stato del qubit rappresenta il valore 
+della variabile binaria.
+
+Una volta che il problema è stato codificato nell'Hamiltoniano, possiamo 
+utilizzare sia il VQE che il QAOA per trovare la soluzione. Mentre il VQE è un
+ approccio più generale che permette di utilizzare diversi tipi di circuiti 
+ quantistici (ansatz), il QAOA utilizza una struttura specifica alternando 
+ due operatori: l'Hamiltoniano del problema (che codifica il QUBO) e 
+ l'Hamiltoniano di mixing che permette di esplorare lo spazio delle soluzioni.
+
+La differenza chiave nell'utilizzo di questi due algoritmi sta nel modo in 
+cui cercano la soluzione:
+- Il VQE è più flessibile nella scelta della struttura del circuito ma 
+potrebbe richiedere più parametri da ottimizzare
+- Il QAOA ha una struttura più rigida ma potenzialmente più efficiente 
+per problemi QUBO, poiché è stato specificamente progettato per problemi di 
+ottimizzazione combinatoria
+
+In entrambi i casi, questi algoritmi sfruttano le proprietà quantistiche 
+come sovrapposizione e entanglement per esplorare lo spazio delle soluzioni 
+in modo più efficiente rispetto agli algoritmi classici, rendendo possibile 
+la risoluzione di problemi QUBO di dimensioni maggiori su hardware quantistico.
+
+}
 
 
 
@@ -112,7 +171,7 @@ preparato. Sulla base di questa misura, un ottimizzatore classico aggiorna i
 parametri nel tentativo di minimizzare l'energia del sistema. Questo ciclo di 
 preparazione, misurazione e aggiornamento viene ripetuto fino a raggiungere la 
 convergenza, ovvero fino a quando l'energia non può essere ulteriormente 
-minimizzata in modo significativo.
+minimizzata in modo significativo (Figura~\ref{fig:figvqe}).
 
 Questo approccio ibrido sfrutta i punti di forza di entrambe le tipologie di 
 computer: il computer quantistico si occupa della preparazione e della misurazione 
@@ -121,11 +180,68 @@ dei parametri. Nel contesto dell'ottimizzazione di portafoglio, il VQE viene
 impiegato per trovare la configurazione ottimale degli asset che minimizza una 
 funzione obiettivo, tenendo conto sia del rischio che del rendimento atteso.
 
-\begin{figure}[h!]
+\begin{figure}[h!]\label{fig:figvqe}
     \centering
     \includegraphics[width=0.9\textwidth]{images/vqe.png}
     \caption{Schema del funzionamento del Variational Quantum Eigensolver~\cite{buonaiuto2023best}.}
 \end{figure}
 
 
-\subsection{QAOA}\label{sec:qaoa}
+
+
+\subsection{Quantum Approximate Optimization Algorithm}\label{sec:qaoa}
+Il Quantum Approximate Optimization Algorithm (QAOA) è un algoritmo variazionale 
+quantistico progettato per trovare soluzioni approssimate a problemi di 
+ottimizzazione combinatoria. Il suo funzionamento si basa sull'alternanza di 
+due operatori: un operatore di \textit{costo} e un operatore di \textit{mixing}, 
+il quale quest'ultimo ha il compito di esplorare lo spazio delle soluzioni.
+
+L'algoritmo opera attraverso una sequenza di strati (\textit{layers}) quantistici, 
+dove ogni strato è composto da due parti principali:
+
+\begin{equation}
+   \hat{U}_C(\gamma) = e^{-i\gamma \hat{H}_C} \quad \text{(operatore di costo)},
+\end{equation}
+\begin{equation}    
+   \hat{U}_M(\beta) = e^{-i\beta \hat{H}_M} \quad \text{(operatore di mixing)},
+\end{equation}
+
+dove $\hat{H}_C$ è l'Hamiltoniano di costo che codifica il problema da ottimizzare, 
+e $\hat{H}_M$ è l'Hamiltoniano di mixing che permette di esplorare lo spazio delle 
+soluzioni. I parametri $\gamma$ e $\beta$ sono parametri variazionali che vengono 
+ottimizzati durante l'esecuzione dell'algoritmo.
+
+Il circuito quantistico inizia preparando tutti i qubit nello stato di sovrapposizione:
+
+\begin{equation}
+   |s\rangle = |+\rangle^{\otimes n} = \frac{1}{\sqrt{2^n}}\sum_{x\in\{{0,1\}}^n} |x\rangle.
+\end{equation}
+
+Lo stato finale dopo $p$ layers è dato da:
+
+\begin{equation}
+   |\psi_p(\gamma, \beta)\rangle = e^{-i\beta_p \hat{H}_M} e^{-i\gamma_p \hat{H}_C} \cdots e^{-i\beta_1 \hat{H}_M} e^{-i\gamma_1 \hat{H}_C} |s\rangle
+\end{equation}
+
+L'obiettivo è massimizzare il valore atteso dell'Hamiltoniano di costo:
+
+\begin{equation}
+   F_p(\gamma, \beta) = \langle\psi_p(\gamma, \beta)| \hat{H}_C |\psi_p(\gamma, \beta)\rangle
+\end{equation}
+
+Il processo di ottimizzazione avviene in modo ibrido: il circuito quantistico prepara e 
+misura gli stati, mentre un ottimizzatore classico aggiorna i parametri $\gamma$ e $\beta$ 
+per massimizzare $F_p$. Questo processo viene ripetuto fino a quando non si trova una 
+soluzione soddisfacente al problema di ottimizzazione (Figura~\ref{fig:figqaoa}).
+
+L'algoritmo QAOA rappresenta quindi un ponte tra il calcolo quantistico e quello classico, 
+sfruttando i vantaggi di entrambi i paradigmi per risolvere problemi di ottimizzazione 
+complessi. La sua efficacia dipende dal numero di layer $p$ utilizzati e dalla qualità 
+dell'ottimizzazione dei parametri.
+
+
+\begin{figure}[h!]\label{fig:figqaoa}
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/qaoa.jpg}
+    \caption{Schema del funzionamento del Quantum Approximate Optimization Algorithm~\cite{blekos2024review}.}
+\end{figure}
