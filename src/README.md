@@ -15,6 +15,7 @@ Il progetto è organizzato nelle seguenti cartelle:
     -   `classical_solution.ipynb`: Notebook che esplora la soluzione classica del problema di ottimizzazione del portafoglio.
     -   `qaoa_solution.ipynb`: Notebook che esplora l'uso del QAOA senza rumore.
     -   `vqe_solution.ipynb`: Notebook che esplora l'uso del VQE senza rumore.
+    -   `plots.ipynb`: Notebook che genera i grafici per l'analisi dei risultati.
 
 > `classical_solution.ipynb` non ha la corrispettiva versione con il rumore perché essendo un problema di ottimizzazione classico, non viene influito dal rumore dei circuiti quantistici.
 
