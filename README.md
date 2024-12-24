@@ -24,7 +24,7 @@ Once the build is complete, you can start the container using:
 docker compose up -d
 ```
 
-> This command will start the container in the background, and share sessions with the host on port 8888.
+> This command will start the container in the background, and share sessions with the host on port `8888`.
 
 ### Stop and remove the container
 When you're done, you can stop the running container with:
@@ -55,14 +55,14 @@ If you are using VScode, you can install the [Jupiter extension](https://marketp
 
 Then, you can change the Jupiter kernel setting `localhost:8888` as the new one. This allows you to execute the Jupiter file locally.
 
-![1st step](./images/1.png)
-![2nd step](./images/2.png)
-![3rd step](./images/3.png)
+![1st step](./img/1.png)
+![2nd step](./img/2.png)
+![3rd step](./img/3.png)
 
 ---
 
 ## Examples
-Within the `examples/` folder, you can find examples of quantum programs that can be executed using the Jupyter Notebook interface.
+Within the `tests/` folder, you can find examples of quantum programs that can be executed using the Jupyter Notebook interface.
 
 ---
 
