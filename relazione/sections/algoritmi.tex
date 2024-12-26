@@ -171,7 +171,7 @@ preparato. Sulla base di questa misura, un ottimizzatore classico aggiorna i
 parametri nel tentativo di minimizzare l'energia del sistema. Questo ciclo di 
 preparazione, misurazione e aggiornamento viene ripetuto fino a raggiungere la 
 convergenza, ovvero fino a quando l'energia non può essere ulteriormente 
-minimizzata in modo significativo (Figura~\ref{fig:figvqe}).
+minimizzata in modo significativo (Figura~\ref{fig:circuitoVQE}).
 
 Questo approccio ibrido sfrutta i punti di forza di entrambe le tipologie di 
 computer: il computer quantistico si occupa della preparazione e della misurazione 
@@ -180,10 +180,11 @@ dei parametri. Nel contesto dell'ottimizzazione di portafoglio, il VQE viene
 impiegato per trovare la configurazione ottimale degli asset che minimizza una 
 funzione obiettivo, tenendo conto sia del rischio che del rendimento atteso.
 
-\begin{figure}[h!]\label{fig:figvqe}
+\begin{figure}[h!]
     \centering
     \includegraphics[width=0.9\textwidth]{images/vqe.png}
     \caption{Schema del funzionamento del Variational Quantum Eigensolver~\cite{buonaiuto2023best}.}
+    \label{fig:circuitoVQE}
 \end{figure}
 
 
@@ -232,7 +233,7 @@ L'obiettivo è massimizzare il valore atteso dell'Hamiltoniano di costo:
 Il processo di ottimizzazione avviene in modo ibrido: il circuito quantistico prepara e 
 misura gli stati, mentre un ottimizzatore classico aggiorna i parametri $\gamma$ e $\beta$ 
 per massimizzare $F_p$. Questo processo viene ripetuto fino a quando non si trova una 
-soluzione soddisfacente al problema di ottimizzazione (Figura~\ref{fig:figqaoa}).
+soluzione soddisfacente al problema di ottimizzazione (Figura~\ref{fig:circuitoQAOA}).
 
 L'algoritmo QAOA rappresenta quindi un ponte tra il calcolo quantistico e quello classico, 
 sfruttando i vantaggi di entrambi i paradigmi per risolvere problemi di ottimizzazione 
@@ -240,8 +241,9 @@ complessi. La sua efficacia dipende dal numero di layer $p$ utilizzati e dalla q
 dell'ottimizzazione dei parametri.
 
 
-\begin{figure}[h!]\label{fig:figqaoa}
+\begin{figure}[h!]
     \centering
     \includegraphics[width=0.9\textwidth]{images/qaoa.jpg}
     \caption{Schema del funzionamento del Quantum Approximate Optimization Algorithm~\cite{blekos2024review}.}
+    \label{fig:circuitoQAOA}
 \end{figure}
