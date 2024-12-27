@@ -132,7 +132,193 @@ l'obiettivo principale del quantum computing non è tanto migliorare il
 risultato ottenuto, quanto piuttosto accelerare la risoluzione dei problemi.
 
 \paragraph{Risoluzione con VQE}
+Per risolvere il problema del PO con un approccio ibrido quantistico-classico, 
+abbiamo scelto, come prima soluzione, di implementare il VQE. Come già spiegato 
+nella Sezione~\ref{sec:vqe}, questo algoritmo combina la potenza computazionale 
+dei circuiti quantistici con l'efficienza degli ottimizzatori classici, utilizzando 
+un ansatz parametrizzato per esplorare lo spazio degli stati quantistici e 
+individuare la configurazione che minimizza l'energia del sistema.
+
+L'ansatz scelto è il circuito \texttt{TwoLocal}, caratterizzato da porte $R_y$ per 
+la rotazione dei qubit, porte $CZ$ per l'entanglement, e l'inserimento di barriere 
+per favorire la leggibilità:
+
+\begin{lstlisting}[language=python, caption={\mmerenda{todo}}]
+ ry = TwoLocal(assets, "ry", "cz", 
+               reps=1, 
+               entanglement="full", 
+               insert_barriers=True)
+\end{lstlisting}
+
+Il circuito parametrizzato è stato integrato nel metodo \texttt{SamplingVQE}, che 
+utilizza un campionatore (\texttt{Sampler()}) e l'ottimizzatore COBYLA per la 
+minimizzazione dei parametri. La soluzione del problema è stata ottenuta tramite 
+\texttt{MinimumEigenOptimizer}, come mostrato nel seguente codice:
+
+\begin{lstlisting}[language=python, caption={\mmerenda{todo}}]
+ svqe_mes = SamplingVQE(sampler=Sampler(), 
+                        ansatz=ry, 
+                        optimizer=cobyla)
+ svqe = MinimumEigenOptimizer(svqe_mes, penalty)
+ result_svqe = svqe.solve(qp)
+\end{lstlisting}
+
+La funzione \texttt{print\_result} è stata utilizzata per visualizzare la soluzione 
+ottimale, includendo la configurazione degli asset selezionati e il valore della 
+funzione obiettivo.
+
+La Figura~\ref{fig:vqe_circuit} mostra lo schema del circuito generato dall'ansatz 
+\texttt{TwoLocal}, evidenziando le porte $R_y$, le connessioni entangled e le 
+barriere di separazione.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/circuitoVQE.png}
+    \caption{Circuito parametrizzato per il VQE, generato con l'ansatz \texttt{TwoLocal}.}
+    \label{fig:vqe_circuit}
+\end{figure}
+
+Un esempio di risultato di un'esecuzione del VQE è mostrato nella Figura~\ref{fig:risultatoVQE}, 
+in cui si evidenziano la configurazione ottimale degli asset e il valore della 
+funzione obiettivo. Questo risultato rappresenta l'allocazione di portafoglio 
+ottimale secondo il modello definito.
+
+
+
 \paragraph{Risoluzione con QAOA}
+Un secondo approccio che abbiamo deciso di utilizzare per risolvere il problema del PO 
+è stato quello del QAOA. Come descritto nella Sezione~\ref{sec:qaoa}, questo algoritmo 
+utilizza un'architettura parametrizzata che integra circuiti quantistici e ottimizzatori 
+classici, con l'obiettivo di approssimare la configurazione ottimale attraverso un 
+processo iterativo di adattamento dei parametri.
+
+In una prima fase, abbiamo provato a implementare manualmente il QAOA, ma questa 
+soluzione si è rivelata poco efficiente dal punto di vista computazionale, richiedendo 
+tempi di esecuzione eccessivamente lunghi. Per una questione di ottimizzazione e 
+scalabilità, è stato quindi deciso di utilizzare la classe \texttt{QAOA} offerta da 
+Qiskit, che fornisce un'implementazione già ottimizzata dell'algoritmo.
+
+Il circuito parametrizzato del QAOA è stato configurato con il numero di ripetizioni 
+(\texttt{reps=1}) e l'ottimizzatore COBYLA per la ricerca dei parametri ottimali. 
+Il codice per configurare e risolvere il problema è il seguente:
+
+\begin{lstlisting}[language=python, caption={\mmerenda{todo}}]
+ qaoa_mes = QAOA(sampler=Sampler(), optimizer=cobyla, reps=1)
+ qaoa = MinimumEigenOptimizer(qaoa_mes, penalty)
+ result_qaoa = qaoa.solve(qp)
+\end{lstlisting}
+
+Il circuito generato rappresenta il cuore del processo di ottimizzazione, poiché 
+definisce lo spazio di soluzioni esplorato dall'algoritmo. 
+La Figura~\ref{fig:qaoa_circuit} mostra lo schema del circuito generato, evidenziando 
+i layer parametrizzati e le connessioni tra i qubit.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/circuitoQAOA.png}
+    \caption{Circuito parametrizzato per il QAOA.}
+    \label{fig:qaoa_circuit}
+\end{figure}
+
+Un esempio di risultato di un'esecuzione del QAOA è mostrato nella 
+Figura~\ref{fig:risultatoQAOA}, che evidenzia la configurazione ottimale degli asset 
+e il valore della funzione obiettivo.
+
+
+
+\subsection{Introduzione del rumore nell'implementazione degli algoritmi}
+
+Finora, gli algoritmi VQE e QAOA sono stati simulati assumendo un sistema ideale, 
+privo di rumore. Tuttavia, per avvicinare l'implementazione alla realtà dei computer 
+quantistici attuali, abbiamo introdotto un modello di rumore basato su un backend 
+simulato, \texttt{FakeTorino}, offerto da Qiskit. Questo backend emula le 
+caratteristiche e le imperfezioni di un dispositivo quantistico reale, come errori 
+di decoerenza e di misurazione.
+
+\mmerenda{scrivere le percentuali dei rumori introdotti}
+
+Il modello di rumore è stato generato utilizzando la classe \texttt{NoiseModel} 
+e applicato al simulatore quantistico \texttt{AerSimulator}. Il codice utilizzato 
+per configurare il simulatore rumoroso è il seguente:
+
+\begin{lstlisting}[language=python, caption={\mmerenda{todo}}]
+ backend = FakeTorino()
+ noise_model = NoiseModel.from_backend(backend)
+ simulator = AerSimulator(noise_model=noise_model)
+\end{lstlisting}
+
+\paragraph{Implementazione del VQE con rumore} 
+Per il VQE, è stato utilizzato un circuito \texttt{TwoLocal} come ansatz. Il 
+circuito è stato \mmerenda{transpiled} per adattarlo alle caratteristiche del simulatore 
+rumoroso. Successivamente, il \texttt{SamplingVQE} è stato configurato con 
+l'ansatz transpiled e l'ottimizzatore COBYLA, per trovare i parametri ottimali 
+minimizzando l'energia:
+
+\begin{lstlisting}[language=python, caption={\mmerenda{todo}}]
+ ansatz = TwoLocal(
+     num_qubits=assets,
+     rotation_blocks="ry",
+     entanglement_blocks="cz",
+     reps=1,
+     entanglement="full",
+     insert_barriers=True
+ )
+ transpiled_ansatz = transpile(ansatz, simulator)
+ svqe_mes_noisy = SamplingVQE(sampler=Sampler(), 
+                              ansatz=transpiled_ansatz, 
+                              optimizer=cobyla)
+ svqe_noisy = MinimumEigenOptimizer(svqe_mes_noisy, penalty)
+ result_svqe_noisy = svqe_noisy.solve(qp)
+\end{lstlisting}
+
+La Figura~\ref{fig:vqe_noisy_circuit} mostra il circuito transpiled utilizzato per il 
+VQE con rumore.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/circuitoVQEnoisy.png}
+    \caption{Circuito parametrizzato per il VQE con rumore, generato con l'ansatz \texttt{TwoLocal}.}
+    \label{fig:vqe_noisy_circuit}
+\end{figure}
+
+\paragraph{Implementazione del QAOA con rumore}
+Anche per il QAOA è stato adottato un approccio simile. L'ansatz del QAOA è stato 
+decomposto e \mmerenda{transpiled} per adattarsi al simulatore rumoroso. La classe 
+\texttt{QAOA} è stata utilizzata con l'ottimizzatore COBYLA e il numero di ripetizioni 
+impostato a \texttt{reps=1}:
+
+\begin{lstlisting}[language=python, caption={\mmerenda{fix questo codice (è sbagliato)}}]
+    qaoa_mes_noisy = QAOA(sampler=Sampler(), optimizer=cobyla, reps=1)
+    qaoa_noisy = MinimumEigenOptimizer(qaoa_mes_noisy, penalty)
+    _ = qaoa_noisy.solve(qp)
+    
+    decomposed_circuit_noisy = qaoa_mes_noisy.ansatz.decompose()
+    transpiled_circuit_noisy = transpile(decomposed_circuit_noisy, simulator)
+    
+    qaoa_mes_noisy.ansatz = transpiled_circuit_noisy
+    qaoa_noisy = MinimumEigenOptimizer(qaoa_mes_noisy, penalty)
+    result_decomposed = qaoa_noisy.solve(qp)
+\end{lstlisting}
+
+\mmerenda{
+In questa implementazione, è stato necessario eseguire il metodo \texttt{solve} 
+due volte. Questo perché Qiskit genera in automatico il circuito quantistico in 
+base al tipo di problema che gli viene fornito. La prima esecuzione di \texttt{solve} 
+viene utilizzata per generare il circuito, mentre la seconda esecuzione viene 
+effettuata dopo aver adattato il circuito al simulatore rumoroso.
+
+La Figura~\ref{fig:qaoa_noisy_circuit} rappresenta il circuito transpiled per il QAOA, 
+mentre i risultati, comprensivi della configurazione degli asset e della funzione 
+obiettivo, sono stati stampati tramite \texttt{print\_result}.
+}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/circuitoVQEnoisy.png}
+    \caption{Circuito parametrizzato per il QAOA con rumore. \mmerenda{todo: mettere il circuito giusto (questo è il VQE noisy)}}
+    \label{fig:qaoa_noisy_circuit}
+\end{figure}
+
 
 
 
