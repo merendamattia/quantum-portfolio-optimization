@@ -8,7 +8,6 @@ services:
             dockerfile: Dockerfile
         volumes:
             - ./src:/home/jovyan/src
-            - ./tests:/home/jovyan/tests
         ports:
             - 8888:8888
         command: "start-notebook.sh --NotebookApp.token="
