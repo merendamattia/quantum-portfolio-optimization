@@ -10,7 +10,7 @@ essere riformulati in questo formato.
 La caratteristica principale dei QUBO è la loro semplicità strutturale: sono 
 problemi non vincolati, il che significa che l'unico vincolo è la natura binaria 
 delle variabili. Nonostante questa apparente semplicità, i QUBO sono problemi 
-NP-completi, il che significa che sono computazionalmente difficili da risolvere 
+NP-completi, i.e., sono computazionalmente difficili da risolvere 
 con metodi classici quando la dimensione del problema cresce.
 
 L'importanza dei QUBO nel contesto del calcolo quantistico deriva dalla loro 
@@ -29,7 +29,7 @@ problemi pratici come:
 Nel contesto degli algoritmi quantistici come il VQE e il QAOA, i problemi QUBO sono 
 particolarmente adatti perché la loro struttura si traduce naturalmente in termini 
 di interazioni tra qubit. Questa caratteristica li rende ideali per 
-l'implementazione su computer quantistici, dove le interazioni tra qubit possono 
+l'implementazione su QPU, dove le interazioni tra qubit possono 
 essere controllate e manipolate per trovare soluzioni ottimali.
 
 
@@ -72,8 +72,8 @@ Quindi, il compito del VQE è trovare l'insieme ottimale di parametri, tale che
 l'energia associata allo stato sia quasi indistinguibile dal suo stato fondamentale, 
 cioè trovare l'insieme di parametri $\theta$, corrispondente all'energia $E_{\min}$, 
 per il quale $|E_{\min} - E_0| < \epsilon$, dove $\epsilon$ è una costante 
-arbitrariamente piccola. Questo problema può essere formulato su un computer 
-quantistico come una serie di gates, che vengono applicate allo stato iniziale 
+arbitrariamente piccola. Questo problema può essere formulato su un QPU 
+come una serie di gates che vengono applicati allo stato iniziale 
 per realizzare un ansatz strutturato per il problema Hamiltoniano. 
 
 Convenzionalmente, lo stato iniziale è impostato per essere lo stato di vuoto, i.e., 
@@ -99,7 +99,7 @@ che $H$ venga espresso nella forma:
 dove \(P_l\) sono stringhe di Pauli rappresentate dal prodotto tensore degli 
 operatori di Pauli \(\sigma_j^i \in \{I, \sigma_X, \sigma_Y, \sigma_Z\}\), 
 con \(j\) che denota il qubit su cui l'operatore agisce e \(i\) il termine 
-dell'Hamiltoniano. I coefficienti \(c_l\) sono pesi reali o complessi, 
+dell'Hamiltoniano. I coefficienti \(c_l\) sono pesi complessi, 
 adeguati per definire l'Hamiltoniano specifico del problema. In questa 
 rappresentazione, l'Hamiltoniano è espresso come una combinazione lineare 
 di stringhe di Pauli.
@@ -135,7 +135,7 @@ di ogni termine. Questo processo è ripetuto separatamente per ogni stringa
 L'approccio VQE mira a bilanciare la complessità del circuito quantistico con il 
 numero di misurazioni richieste, permettendo un'ottimizzazione efficiente degli 
 stati parametrizzati. Il processo di ottimizzazione avviene in modo iterativo. 
-Inizialmente, il computer quantistico prepara uno stato quantistico utilizzando 
+Inizialmente, il QPU prepara uno stato quantistico utilizzando 
 i parametri correnti. Successivamente, viene misurata l'energia di questo stato 
 preparato. Sulla base di questa misura, un ottimizzatore classico aggiorna i 
 parametri nel tentativo di minimizzare l'energia del sistema. Questo ciclo di 
@@ -144,16 +144,16 @@ convergenza, ovvero fino a quando l'energia non può essere ulteriormente
 minimizzata in modo significativo (Figura~\ref{fig:circuitoVQE}).
 
 Questo approccio ibrido sfrutta i punti di forza di entrambe le tipologie di 
-computer: il computer quantistico si occupa della preparazione e della misurazione 
-degli stati quantistici, mentre il computer classico gestisce l'ottimizzazione 
-dei parametri. Nel contesto dell'ottimizzazione di portafoglio, il VQE viene 
+computer: il QPU si occupa della preparazione e della misurazione 
+degli stati quantistici, mentre la CPU gestisce l'ottimizzazione 
+dei parametri. Nel contesto della PO, il VQE viene 
 impiegato per trovare la configurazione ottimale degli asset che minimizza una 
 funzione obiettivo, tenendo conto sia del rischio che del rendimento atteso.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.9\textwidth]{images/vqe.png}
-    \caption{Schema del funzionamento del Variational Quantum Eigensolver~\cite{buonaiuto2023best}.}
+    \caption{Schema del funzionamento del VQE~\cite{buonaiuto2023best}.}
     \label{fig:circuitoVQE}
 \end{figure}
 
@@ -165,7 +165,7 @@ Il Quantum Approximate Optimization Algorithm (QAOA) è un algoritmo variazional
 quantistico progettato per trovare soluzioni approssimate a problemi di 
 ottimizzazione combinatoria. Il suo funzionamento si basa sull'alternanza di 
 due operatori: un operatore di \textit{costo} e un operatore di \textit{mixing}, 
-il quale quest'ultimo ha il compito di esplorare lo spazio delle soluzioni.
+il quale ha il compito di esplorare lo spazio delle soluzioni.
 
 L'algoritmo opera attraverso una sequenza di strati (\textit{layers}) quantistici, 
 dove ogni strato è composto da due parti principali:
@@ -214,6 +214,6 @@ dell'ottimizzazione dei parametri.
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.9\textwidth]{images/qaoa.jpg}
-    \caption{Schema del funzionamento del Quantum Approximate Optimization Algorithm~\cite{blekos2024review}.}
+    \caption{Schema del funzionamento del QAOA~\cite{blekos2024review}.}
     \label{fig:circuitoQAOA}
 \end{figure}

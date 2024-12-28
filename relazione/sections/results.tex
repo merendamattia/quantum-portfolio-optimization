@@ -1,10 +1,18 @@
 \section{Risultati}\label{sec:results}
 
-Per l'analisi dei risultati noiseless, abbiamo utilizzato una configurazione con 
+Per l'analisi dei risultati senza rumore (\textit{noiseless}), è stata utilizza
+una configurazione con 
 8 asset, un budget massimo pari a 5, una penalità impostata sul valore del budget, 
-un rischio pari a 0.3 e 50 ripetizioni per ciascun algoritmo. 
+un rischio pari al 20\% e 50 ripetizioni per ciascun algoritmo. 
 La Figura~\ref{fig:noiseless-risultati-1} mostra rispettivamente la distribuzione 
 delle selezioni effettuate dagli algoritmi QAOA, VQE e Exact Eigensolver.
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.99\textwidth]{images/risultati/noiseless-risultati-1.png}
+    \caption{Distribuzione delle selezioni effettuate dagli algoritmi QAOA, VQE e Exact Eigensolver.}
+    \label{fig:noiseless-risultati-1}
+\end{figure}
 
 L'algoritmo QAOA evidenzia una preferenza marcata per specifici asset, che vengono 
 selezionati con una frequenza significativamente maggiore rispetto agli altri. 
@@ -22,8 +30,7 @@ ottimali, evidenziando che alcune incertezze permangono anche in questo caso.
 L'Exact Eigensolver rappresenta la \textit{ground truth} del problema. Questo 
 metodo fornisce sempre la soluzione esatta e ottimale del problema, servendo 
 da riferimento principale per valutare la qualità dei risultati ottenuti con 
-gli approcci approssimati. La sua precisione consente di identificare con 
-certezza gli asset migliori da selezionare.
+gli approcci approssimati.
 
 La Figura~\ref{fig:noiseless-risultati-2} confronta le distribuzioni delle 
 selezioni dei tre algoritmi, evidenziando le principali differenze. Il QAOA 
@@ -32,16 +39,11 @@ confermando una minore capacità esplorativa rispetto al VQE, che riesce
 invece a bilanciare meglio esplorazione ed exploitazione.
 
 Infine, la Figura~\ref{fig:noiseless-risultati-3} analizza la frequenza 
-delle combinazioni di asset selezionate nei 50 esperimenti. Anche qui 
+delle combinazioni di asset selezionate nelle 50 ripetizioni. Anche qui 
 si nota come il QAOA presenti una concentrazione delle combinazioni 
 selezionate, mentre il VQE esplora una maggiore varietà di configurazioni. 
 
-\begin{figure}[ht!]
-    \centering
-    \includegraphics[width=0.99\textwidth]{images/risultati/noiseless-risultati-1.png}
-    \caption{Distribuzione delle selezioni effettuate dagli algoritmi QAOA, VQE e Exact Eigensolver.}
-    \label{fig:noiseless-risultati-1}
-\end{figure}
+
 \begin{figure}[ht!]
     \centering
     \includegraphics[width=0.99\textwidth]{images/risultati/noiseless-risultati-2.png}
@@ -56,20 +58,27 @@ selezionate, mentre il VQE esplora una maggiore varietà di configurazioni.
 \end{figure}
 
 
-\subsection{Risultati Noisy}
+\subsection{Risultati con l'introduzione del rumore}
 
-Per l'analisi dei risultati noisy, abbiamo utilizzato la stessa configurazione 
+Per l'analisi dei risultati condizionati dal rumore (\textit{noisy}), 
+è stata utilizzata la stessa configurazione 
 di base con 8 asset, un budget massimo pari a 5, una penalità impostata sul valore 
-del budget, un rischio pari a 0.3 e 50 ripetizioni per ciascun algoritmo. 
+del budget, un rischio pari al 20\% e 50 ripetizioni per ciascun algoritmo. 
 La Figura~\ref{fig:noisy-risultati-1} mostra rispettivamente la distribuzione 
 delle selezioni effettuate dagli algoritmi QAOA e VQE in presenza di rumore.
 
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.99\textwidth]{images/risultati/noisy-risultati-1.png}
+    \caption{Distribuzione delle selezioni effettuate dagli algoritmi QAOA e VQE in presenza di rumore.}
+    \label{fig:noisy-risultati-1}
+\end{figure}
+
 L'algoritmo QAOA, in presenza di rumore, mostra una distribuzione delle selezioni 
-ancora più concentrata rispetto alla versione noiseless. Questo comportamento 
+meno concentrata rispetto alla versione noiseless. Questo comportamento 
 è dovuto alla sensibilità dell'algoritmo ai rumori di decoerenza e di gate, 
-che influenzano negativamente la capacità dell'algoritmo di esplorare lo spazio 
-delle soluzioni. La presenza di rumore tende a far convergere l'algoritmo verso 
-configurazioni subottimali, riducendo ulteriormente la diversificazione delle selezioni.
+che influenzano negativamente la capacità di esplorare al meglio lo spazio 
+delle soluzioni. 
 
 Il VQE, sebbene anch'esso influenzato dal rumore, riesce a mantenere una 
 distribuzione delle selezioni più variegata rispetto al QAOA. La capacità 
@@ -79,22 +88,10 @@ una riduzione della qualità delle soluzioni rispetto alla versione noiseless.
 
 La Figura~\ref{fig:noisy-risultati-2} confronta le distribuzioni delle selezioni 
 dei due algoritmi in presenza di rumore, evidenziando le principali differenze. 
-Il QAOA tende a concentrare le sue scelte su un insieme ancora più ristretto di asset 
-rispetto alla versione noiseless, mentre il VQE riesce a mantenere una maggiore 
-varietà nelle selezioni, sebbene con una qualità complessiva inferiore.
 
 Infine, la Figura~\ref{fig:noisy-risultati-3} analizza la frequenza delle combinazioni 
-di asset selezionate nei 50 esperimenti in presenza di rumore. Anche qui si nota come 
-il QAOA presenti una concentrazione delle combinazioni selezionate, mentre il VQE 
-esplora una maggiore varietà di configurazioni, sebbene con una frequenza ridotta 
-rispetto alla versione noiseless.
+di asset selezionate nei 50 esperimenti in presenza di rumore.
 
-\begin{figure}[ht!]
-    \centering
-    \includegraphics[width=0.99\textwidth]{images/risultati/noisy-risultati-1.png}
-    \caption{Distribuzione delle selezioni effettuate dagli algoritmi QAOA e VQE in presenza di rumore.}
-    \label{fig:noisy-risultati-1}
-\end{figure}
 \begin{figure}[ht!]
     \centering
     \includegraphics[width=0.99\textwidth]{images/risultati/noisy-risultati-2.png}
@@ -110,8 +107,7 @@ rispetto alla versione noiseless.
 
 
 \paragraph{Confronto algoritmi (noiseless vs noisy)}
-Infine, confrontiamo i risultati ottenuti dagli algoritmi QAOA e VQE in 
-condizioni noiseless e noisy. Questo confronto ci permette di valutare l'impatto 
+Quest'ultimo confronto ci permette di valutare l'impatto 
 del rumore sulle prestazioni degli algoritmi e sulla qualità delle soluzioni ottenute.
 
 La Figura~\ref{fig:confronto-svqe-noiseless-noisy} mostra il confronto delle combinazioni selezionate 

@@ -84,14 +84,15 @@ Il problema viene quindi configurato attraverso l'inizializzazione di
 un'istanza della classe \texttt{PortfolioOptimization}, alla quale vengono 
 passati i parametri fondamentali: il vettore dei rendimenti attesi 
 (\texttt{expected\_returns}), la matrice di covarianza (\texttt{covariances}), 
-il fattore di rischio e il budget. La configurazione finale produce 
+il fattore di rischio (\texttt{risk\_factor}) e il budget (\texttt{budget}). 
+La configurazione finale produce 
 un output che specifica il numero totale di asset disponibili, 
 il budget allocato, la penalità impostata e il fattore di rischio 
 utilizzato. Il problema viene infine convertito in un programma 
 quadratico attraverso il metodo \texttt{to\_quadratic\_program} per la 
 successiva ottimizzazione.
 
-\begin{lstlisting}[language=python, caption={Configurazione del problema di ottimizzazione del portafoglio.}]
+\begin{lstlisting}[language=python, caption={Configurazione del problema di PO.}]
  risk_factor = 0.2
  budget = int(assets / 3 * 2)
  penalty = budget
@@ -120,7 +121,7 @@ risolvere il problema di ottimizzazione.
  result = exact_eigensolver.solve(qp)
 \end{lstlisting}
 
-Questa implementazione classica serve come benchmark fondamentale per 
+Questa implementazione classica serve come \textit{ground truth} per 
 valutare le prestazioni dei metodi quantistici che verranno 
 implementati successivamente.
 
@@ -164,10 +165,6 @@ minimizzazione dei parametri. La soluzione del problema è stata ottenuta tramit
  result_svqe = svqe.solve(qp)
 \end{lstlisting}
 
-La funzione \texttt{print\_result} è stata utilizzata per visualizzare la soluzione 
-ottimale, includendo la configurazione degli asset selezionati e il valore della 
-funzione obiettivo.
-
 La Figura~\ref{fig:vqe_circuit} mostra lo schema del circuito generato dall'ansatz 
 \texttt{TwoLocal}, evidenziando le porte $R_y$, le connessioni entangled e le 
 barriere di separazione.
@@ -197,7 +194,7 @@ In una prima fase, abbiamo provato a implementare manualmente il QAOA, ma questa
 soluzione si è rivelata poco efficiente dal punto di vista computazionale, richiedendo 
 tempi di esecuzione eccessivamente lunghi. Per una questione di ottimizzazione e 
 scalabilità, è stato quindi deciso di utilizzare la classe \texttt{QAOA} offerta da 
-Qiskit, che fornisce un'implementazione già ottimizzata dell'algoritmo.
+Qiskit~\cite{qiskit_portfolio_optimization}, che fornisce un'implementazione già ottimizzata dell'algoritmo.
 
 Il circuito parametrizzato del QAOA è stato configurato con il numero di ripetizioni 
 (\texttt{reps=1}) e l'ottimizzatore COBYLA per la ricerca dei parametri ottimali. 
@@ -209,8 +206,6 @@ Il codice per configurare e risolvere il problema è il seguente:
  result_qaoa = qaoa.solve(qp)
 \end{lstlisting}
 
-Il circuito generato rappresenta il cuore del processo di ottimizzazione, poiché 
-definisce lo spazio di soluzioni esplorato dall'algoritmo. 
 La Figura~\ref{fig:qaoa_circuit} mostra lo schema del circuito generato, evidenziando 
 i layer parametrizzati e le connessioni tra i qubit.
 
@@ -260,9 +255,9 @@ sulle fonti di rumore, mentre la calibrazione automatica delle istruzioni
 (\texttt{calibrate\_instructions=True}) garantisce una maggiore fedeltà nella 
 simulazione del comportamento del dispositivo.
 
-Il modello di rumore generato include informazioni relative a errori di decoerenza, 
+Il modello di rumore generato include informazioni relative ad errori di decoerenza, 
 errori di misura e altre imperfezioni che caratterizzano i computer quantistici 
-attuali. Specificatamente, è stato implementato un modello che include un errore 
+attuali. Più nel dettaglio, è stato implementato un modello che include un errore 
 di flip del 5\%, un errore di depolarizzazione dell'1\% per gate a 1 qubit e del 2\%
 per gate a 2 qubit, e un errore del 2\% sulle misure. Questa configurazione ha 
 permesso di valutare le prestazioni degli algoritmi in un contesto più realistico 
@@ -274,9 +269,7 @@ prestazioni.
 
 \paragraph{Implementazione del VQE con rumore} 
 
-Per il VQE, è stato utilizzato un circuito \texttt{TwoLocal} come ansatz, configurato 
-per includere porte di rotazione $R_y$, blocchi di entanglement $CZ$, e barriere per 
-una maggiore leggibilità.
+Per il VQE con rumore, è stato utilizzato lo stesso circuito usato nella versione senza rumore.
 
 \begin{lstlisting}[language=python, caption={Configurazione dell'ansatz per il VQE.}]
  ansatz = TwoLocal(
