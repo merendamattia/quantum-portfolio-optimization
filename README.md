@@ -27,7 +27,7 @@ Per eseguire il container:
 docker compose up -d
 ```
 
-> Questo comando avvierà il container in background e condividerà le sessioni con l'host sulla porta 8888.
+> Questo comando avvierà il container in background e condividerà le sessioni con l'host sulla porta `8888`.
 
 ### Stop 
 Per terminare il container:
