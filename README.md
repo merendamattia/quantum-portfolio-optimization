@@ -1,79 +1,55 @@
 # Quantum Portfolio Optimization
-> Abstract relazione...
+Realizzato da:
+- [Colli Simone](https://github.com/simonecolli)
+- [Merenda Saverio Mattia](https://github.com/merendamattia)
 
-## Prerequisites
-Make sure you have the following tools installed on your system:
+In questo elaborato esploriamo l'applicazione del calcolo quantistico all'ottimizzazione del portafoglio in ambito finanziario, confrontando i metodi classici  con gli approcci quantistici basati su VQE (Variational Quantum Eigensolver) e QAOA (Quantum Approximate Optimization Algorithm). Formuliamo il problema dell'ottimizzazione del portafoglio come un problema QUBO (Quadratic Unconstrained Binary Optimization) e lo implementiamo utilizzando il framework Qiskit. Lo studio include simulazioni sia in assenza che in presenza di rumore per valutare le prestazioni degli algoritmi in condizioni realistiche. La ricerca evidenzia le attuali limitazioni nel scalare l'ottimizzazione quantistica del portafoglio alle applicazioni del mondo reale, principalmente a causa dei vincoli hardware e dell'impatto del rumore su sistemi più grandi. 
 
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
+## Requisiti per l'utilizzo
+Per utilizzare il sistema, è necessario avere i seguenti strumenti installati:
+-   [Docker](https://docs.docker.com/engine/install/)
+-   [Docker Compose](https://docs.docker.com/compose/install/)
 
-## Build the Docker container
-To build the Docker image and set up the container without running it immediately, use the following command:
-
-> This command will create the container but will **not** start it automatically.
-
+Verifica l'installazione con i seguenti comandi:
 ```bash
-docker compose up --build --no-start
+docker --version
+docker compose version
 ```
 
-### Start the container
+## Build e Run 
+Per costruire il container:
+```bash
+docker compose up --build --no-cache --no-start
+```
 
-Once the build is complete, you can start the container using:
-
+Per eseguire il container:
 ```bash
 docker compose up -d
 ```
 
-> This command will start the container in the background, and share sessions with the host on port `8888`.
+> Questo comando avvierà il container in background e condividerà le sessioni con l'host sulla porta `8888`.
 
-### Stop and remove the container
-When you're done, you can stop the running container with:
+### Stop 
+Per terminare il container:
 
 ```bash
 docker compose stop
 ```
 
-To completely remove the container (but keep the image), you can run:
-
-```bash
-docker compose down
-```
-
-> This will stop and remove the container and the associated network. All notebooks and data won't be lost because they are stored in the shared folder (`src/`).
-
 ---
 
-## Usage
-To use the installed environment, you can access the Jupiter Notebook server by opening the following URL in your web browser:
+## Utilizzo
+Per utilizzare l'ambiente installato, puoi accedere al server Jupiter Notebook aprendo il seguente URL nel tuo browser web:
 
 ```
 http://localhost:8888
 ```
 
 ### VScode integration
-If you are using VScode, you can install the [Jupiter extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter) to edit `.ipynb` files, without interacting with the web browser interface.
+Se utilizzi VScode, puoi installare l'estensione [Jupiter](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter) per modificare i file `.ipynb`, senza interagire con l'interfaccia del browser web.
 
-Then, you can change the Jupiter kernel setting `localhost:8888` as the new one. This allows you to execute the Jupiter file locally.
+Una volta fatto ciò, puoi impostare il kernel Jupiter su `localhost:8888`. Questo ti consente di eseguire il file Jupiter in locale.
 
-![1st step](./img/1.png)
-![2nd step](./img/2.png)
-![3rd step](./img/3.png)
-
----
-
-## Examples
-Within the `tests/` folder, you can find examples of quantum programs that can be executed using the Jupyter Notebook interface.
-
----
-
-## Documentation
-Make sure you have the following tools installed on your system:
-- [Doxygen](https://doxygen.nl)
-- [Make](https://www.gnu.org/software/make/)
-
-Then:
-```bash
-doxygen Doxyfile
-cd doc/latex
-make
-```
+![1st step](./images/1.png)
+![2nd step](./images/2.png)
+![3rd step](./images/3.png)
