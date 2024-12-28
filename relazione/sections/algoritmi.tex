@@ -32,36 +32,6 @@ di interazioni tra qubit. Questa caratteristica li rende ideali per
 l'implementazione su computer quantistici, dove le interazioni tra qubit possono 
 essere controllate e manipolate per trovare soluzioni ottimali.
 
-\mmerenda{
-Il collegamento tra i problemi QUBO e gli algoritmi quantistici come VQE e QAOA 
-è particolarmente interessante. Per utilizzare questi algoritmi quantistici, 
-il primo passo consiste nel mappare il problema QUBO in un Hamiltoniano quantistico. 
-Questa mappatura viene realizzata traducendo le variabili binarie classiche 
-$x_i$ in operatori di Pauli-Z, dove lo stato del qubit rappresenta il valore 
-della variabile binaria.
-
-Una volta che il problema è stato codificato nell'Hamiltoniano, possiamo 
-utilizzare sia il VQE che il QAOA per trovare la soluzione. Mentre il VQE è un
- approccio più generale che permette di utilizzare diversi tipi di circuiti 
- quantistici (ansatz), il QAOA utilizza una struttura specifica alternando 
- due operatori: l'Hamiltoniano del problema (che codifica il QUBO) e 
- l'Hamiltoniano di mixing che permette di esplorare lo spazio delle soluzioni.
-
-La differenza chiave nell'utilizzo di questi due algoritmi sta nel modo in 
-cui cercano la soluzione:
-- Il VQE è più flessibile nella scelta della struttura del circuito ma 
-potrebbe richiedere più parametri da ottimizzare
-- Il QAOA ha una struttura più rigida ma potenzialmente più efficiente 
-per problemi QUBO, poiché è stato specificamente progettato per problemi di 
-ottimizzazione combinatoria
-
-In entrambi i casi, questi algoritmi sfruttano le proprietà quantistiche 
-come sovrapposizione e entanglement per esplorare lo spazio delle soluzioni 
-in modo più efficiente rispetto agli algoritmi classici, rendendo possibile 
-la risoluzione di problemi QUBO di dimensioni maggiori su hardware quantistico.
-
-}
-
 
 
 \subsection{Variational Quantum Eigensolver}\label{sec:vqe}

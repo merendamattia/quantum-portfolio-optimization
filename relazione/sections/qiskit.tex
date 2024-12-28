@@ -29,7 +29,7 @@ rappresentando l'andamento temporale dei prezzi (Figura~\ref{fig:graficiAssets})
     \hline
     \end{tabular}
     \caption{Esempio di dati generati dalla classe \texttt{RandomDataProvider} 
-        con un numero di asset uguale a 4 e un periodo temporale che parte dal 2016--01--01.}
+        con un numero di asset uguale a 4 e un periodo temporale che parte dal 01/01/2016.}
     \label{tab:dati-tickers}
 \end{table}
 
@@ -37,12 +37,11 @@ Successivamente, sono stati calcolati i rendimenti medi per ciascun asset
 (Formula~\ref{eqn:matriceRendimentiAttesi}) e la matrice di covarianza 
 (Formula~\ref{eqn:matriceCovarianza}) utilizzando i metodi offerti dalla 
 classe \texttt{RandomDataProvider}. Questi due elementi rappresentano una 
-componente fondamentale per l'ottimizzazione del portafoglio, in quanto i 
+componente fondamentale per la PO, in quanto i 
 rendimenti medi forniscono una misura dell'aspettativa di guadagno, mentre 
 la matrice di covarianza descrive la relazione tra le variazioni dei prezzi 
 dei diversi asset.
 
-I calcoli sono stati effettuati mediante i seguenti metodi:
 \begin{lstlisting}[language=python, caption={Calcolo dei rendimenti attesi e della matrice di covarianza.}]
  mu = data_provider.get_period_return_mean_vector()
  sigma = data_provider.get_period_return_covariance_matrix()
@@ -64,12 +63,14 @@ questo consente di evidenziare visivamente le correlazioni tra i diversi asset.
     \begin{subfigure}{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/matriceCovarianza.png}
-        \caption{Esempio di matrice di covarianza.}
+        \caption{Esempio di matrice di covarianza.\footnotemark}
         \label{fig:matriceCovarianza}
     \end{subfigure}
-    \caption{Visualizzazione (a) dell'andamento dei prezzi degli asset generati, e (b) della matrice di covarianza calcolata.}
+    \caption{(a) Andamento dei prezzi degli asset generati, e (b) matrice di covarianza calcolata.}
     %\label{fig:}
 \end{figure}
+
+\footnotetext{I valori della matrice sono stati moltiplicati per $10^5$ per facilitare la lettura nella relazione, mentre per i calcoli sono stati utilizzati i valori originali.}
 
 Dopo aver calcolato i rendimenti medi e la matrice di covarianza per ciascun 
 asset, procediamo con la configurazione del problema di ottimizzazione. 
@@ -133,17 +134,17 @@ risultato ottenuto, quanto piuttosto accelerare la risoluzione dei problemi.
 
 \paragraph{Risoluzione con VQE}
 Per risolvere il problema del PO con un approccio ibrido quantistico-classico, 
-abbiamo scelto, come prima soluzione, di implementare il VQE. Come già spiegato 
+abbiamo scelto, come prima soluzione, di implementare il VQE~\cite{qiskit_portfolio_optimization}. Come già spiegato 
 nella Sezione~\ref{sec:vqe}, questo algoritmo combina la potenza computazionale 
 dei circuiti quantistici con l'efficienza degli ottimizzatori classici, utilizzando 
 un ansatz parametrizzato per esplorare lo spazio degli stati quantistici e 
 individuare la configurazione che minimizza l'energia del sistema.
 
-L'ansatz scelto è il circuito \texttt{TwoLocal}, caratterizzato da porte $R_y$ per 
+L'ansatz è ottenuto dal circuito \texttt{TwoLocal}, caratterizzato da porte $R_y$ per 
 la rotazione dei qubit, porte $CZ$ per l'entanglement, e l'inserimento di barriere 
-per favorire la leggibilità:
+per favorire la leggibilità.
 
-\begin{lstlisting}[language=python, caption={\mmerenda{todo}}]
+\begin{lstlisting}[language=python]
  ry = TwoLocal(assets, "ry", "cz", 
                reps=1, 
                entanglement="full", 
@@ -153,9 +154,9 @@ per favorire la leggibilità:
 Il circuito parametrizzato è stato integrato nel metodo \texttt{SamplingVQE}, che 
 utilizza un campionatore (\texttt{Sampler()}) e l'ottimizzatore COBYLA per la 
 minimizzazione dei parametri. La soluzione del problema è stata ottenuta tramite 
-\texttt{MinimumEigenOptimizer}, come mostrato nel seguente codice:
+\texttt{MinimumEigenOptimizer}, come mostrato nel seguente frammento di codice.
 
-\begin{lstlisting}[language=python, caption={\mmerenda{todo}}]
+\begin{lstlisting}[language=python]
  svqe_mes = SamplingVQE(sampler=Sampler(), 
                         ansatz=ry, 
                         optimizer=cobyla)
@@ -202,7 +203,7 @@ Il circuito parametrizzato del QAOA è stato configurato con il numero di ripeti
 (\texttt{reps=1}) e l'ottimizzatore COBYLA per la ricerca dei parametri ottimali. 
 Il codice per configurare e risolvere il problema è il seguente:
 
-\begin{lstlisting}[language=python, caption={\mmerenda{todo}}]
+\begin{lstlisting}[language=python]
  qaoa_mes = QAOA(sampler=Sampler(), optimizer=cobyla, reps=1)
  qaoa = MinimumEigenOptimizer(qaoa_mes, penalty)
  result_qaoa = qaoa.solve(qp)
@@ -226,35 +227,58 @@ e il valore della funzione obiettivo.
 
 
 
-\subsection{Introduzione del rumore nell'implementazione degli algoritmi}
+\subsection{Introduzione del rumore}
 
 Finora, gli algoritmi VQE e QAOA sono stati simulati assumendo un sistema ideale, 
 privo di rumore. Tuttavia, per avvicinare l'implementazione alla realtà dei computer 
 quantistici attuali, abbiamo introdotto un modello di rumore basato su un backend 
-simulato, \texttt{FakeTorino}, offerto da Qiskit. Questo backend emula le 
-caratteristiche e le imperfezioni di un dispositivo quantistico reale, come errori 
-di decoerenza e di misurazione.
-
-\mmerenda{scrivere le percentuali dei rumori introdotti}
+generico, \texttt{GenericBackendV2}, offerto da Qiskit. Questo backend consente 
+di configurare simulazioni personalizzate, adattandosi al numero di qubit richiesti 
+e fornendo dettagli sul rumore associato al dispositivo simulato.
 
 Il modello di rumore è stato generato utilizzando la classe \texttt{NoiseModel} 
-e applicato al simulatore quantistico \texttt{AerSimulator}. Il codice utilizzato 
-per configurare il simulatore rumoroso è il seguente:
+e applicato al simulatore quantistico \texttt{AerSimulator}:
 
-\begin{lstlisting}[language=python, caption={\mmerenda{todo}}]
- backend = FakeTorino()
+\begin{lstlisting}[language=python, caption={Configurazione del modello di rumore per la simulazione.}]
+ # Configurazione del backend generico
+ backend = GenericBackendV2(
+     num_qubits=assets, 
+     noise_info=True,
+     seed=seed,
+     calibrate_instructions=True
+ )
+
+ # Generazione del modello di rumore
  noise_model = NoiseModel.from_backend(backend)
  simulator = AerSimulator(noise_model=noise_model)
 \end{lstlisting}
 
-\paragraph{Implementazione del VQE con rumore} 
-Per il VQE, è stato utilizzato un circuito \texttt{TwoLocal} come ansatz. Il 
-circuito è stato \mmerenda{transpiled} per adattarlo alle caratteristiche del simulatore 
-rumoroso. Successivamente, il \texttt{SamplingVQE} è stato configurato con 
-l'ansatz transpiled e l'ottimizzatore COBYLA, per trovare i parametri ottimali 
-minimizzando l'energia:
+Il backend \texttt{GenericBackendV2} è stato configurato per adattarsi al numero 
+di qubit utilizzati nel problema di ottimizzazione del portafoglio (\texttt{assets}). 
+L'opzione \texttt{noise\_info} è stata abilitata per includere dettagli realistici 
+sulle fonti di rumore, mentre la calibrazione automatica delle istruzioni 
+(\texttt{calibrate\_instructions=True}) garantisce una maggiore fedeltà nella 
+simulazione del comportamento del dispositivo.
 
-\begin{lstlisting}[language=python, caption={\mmerenda{todo}}]
+Il modello di rumore generato include informazioni relative a errori di decoerenza, 
+errori di misura e altre imperfezioni che caratterizzano i computer quantistici 
+attuali. Specificatamente, è stato implementato un modello che include un errore 
+di flip del 5\%, un errore di depolarizzazione dell'1\% per gate a 1 qubit e del 2\%
+per gate a 2 qubit, e un errore del 2\% sulle misure. Questa configurazione ha 
+permesso di valutare le prestazioni degli algoritmi in un contesto più realistico 
+rispetto a un sistema ideale, dove ci aspettiamo un moderato deterioramento delle 
+prestazioni.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% VQE noisy %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\paragraph{Implementazione del VQE con rumore} 
+
+Per il VQE, è stato utilizzato un circuito \texttt{TwoLocal} come ansatz, configurato 
+per includere porte di rotazione $R_y$, blocchi di entanglement $CZ$, e barriere per 
+una maggiore leggibilità.
+
+\begin{lstlisting}[language=python, caption={Configurazione dell'ansatz per il VQE.}]
  ansatz = TwoLocal(
      num_qubits=assets,
      rotation_blocks="ry",
@@ -263,7 +287,21 @@ minimizzando l'energia:
      entanglement="full",
      insert_barriers=True
  )
- transpiled_ansatz = transpile(ansatz, simulator)
+\end{lstlisting}
+
+Successivamente, l'ansatz è stato decomposto per ottenere una rappresentazione più 
+dettagliata del circuito e adattato al backend rumoroso tramite la transpilazione.
+
+\begin{lstlisting}[language=python, caption={Decomposizione e transpilazione dell'ansatz per il backend rumoroso.}]
+ decomposed_ansatz = ansatz.decompose()
+ transpiled_ansatz = transpile(decomposed_ansatz, 
+                               backend=backend)
+\end{lstlisting}
+
+Il circuito transpiled è stato poi utilizzato per configurare il metodo \texttt{SamplingVQE}, 
+combinato con l'ottimizzatore COBYLA per minimizzare l'energia del sistema.
+
+\begin{lstlisting}[language=python, caption={Configurazione e risoluzione del VQE con rumore.}]
  svqe_mes_noisy = SamplingVQE(sampler=Sampler(), 
                               ansatz=transpiled_ansatz, 
                               optimizer=cobyla)
@@ -271,51 +309,56 @@ minimizzando l'energia:
  result_svqe_noisy = svqe_noisy.solve(qp)
 \end{lstlisting}
 
-La Figura~\ref{fig:vqe_noisy_circuit} mostra il circuito transpiled utilizzato per il 
-VQE con rumore.
+La Figura~\ref{fig:vqe_noisy_circuit} mostra il circuito utilizzato per il VQE con rumore.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.8\textwidth]{images/circuitoVQEnoisy.png}
-    \caption{Circuito parametrizzato per il VQE con rumore, generato con l'ansatz \texttt{TwoLocal}.}
+    \caption{Circuito a 4 qubit parametrizzato per il VQE con rumore.}
     \label{fig:vqe_noisy_circuit}
 \end{figure}
 
-\paragraph{Implementazione del QAOA con rumore}
-Anche per il QAOA è stato adottato un approccio simile. L'ansatz del QAOA è stato 
-decomposto e \mmerenda{transpiled} per adattarsi al simulatore rumoroso. La classe 
-\texttt{QAOA} è stata utilizzata con l'ottimizzatore COBYLA e il numero di ripetizioni 
-impostato a \texttt{reps=1}:
 
-\begin{lstlisting}[language=python, caption={\mmerenda{fix questo codice (è sbagliato)}}]
-    qaoa_mes_noisy = QAOA(sampler=Sampler(), optimizer=cobyla, reps=1)
-    qaoa_noisy = MinimumEigenOptimizer(qaoa_mes_noisy, penalty)
-    _ = qaoa_noisy.solve(qp)
-    
-    decomposed_circuit_noisy = qaoa_mes_noisy.ansatz.decompose()
-    transpiled_circuit_noisy = transpile(decomposed_circuit_noisy, simulator)
-    
-    qaoa_mes_noisy.ansatz = transpiled_circuit_noisy
-    qaoa_noisy = MinimumEigenOptimizer(qaoa_mes_noisy, penalty)
-    result_decomposed = qaoa_noisy.solve(qp)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% QAOA noisy %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\paragraph{Implementazione del QAOA con rumore}
+
+Anche il QAOA è stato implementato tenendo conto del rumore simulato tramite il backend 
+\texttt{GenericBackendV2}. Come per il VQE, il circuito parametrizzato è stato adattato 
+al backend rumoroso per rappresentare fedelmente le caratteristiche di un computer 
+quantistico reale.
+
+L'algoritmo è stato inizialmente configurato con la classe \texttt{QAOA}, utilizzando 
+il sampler \texttt{Sampler()} e l'ottimizzatore COBYLA. Una prima esecuzione del 
+metodo \texttt{solve} è stata necessaria per generare automaticamente il circuito 
+iniziale, successivamente decomposto e transpiled per adattarsi al backend rumoroso. 
+Con il circuito adattato, una seconda esecuzione del metodo \texttt{solve} ha 
+permesso di risolvere il problema di ottimizzazione. 
+Il codice completo è mostrato di seguito.
+
+\begin{lstlisting}[language=python, caption={Implementazione del QAOA con rumore.}]
+ # Configurazione e prima esecuzione del QAOA
+ qaoa_mes_noisy = QAOA(sampler=Sampler(), optimizer=cobyla, reps=1)
+ qaoa_noisy = MinimumEigenOptimizer(qaoa_mes_noisy, penalty)
+ _ = qaoa_noisy.solve(qp)
+
+ # Decomposizione e transpilazione del circuito
+ decomposed_circuit_noisy = qaoa_mes_noisy.ansatz.decompose()
+ transpiled_circuit_noisy = transpile(decomposed_circuit_noisy, backend=backend)
+ qaoa_mes_noisy.ansatz = transpiled_circuit_noisy
+
+ # Risoluzione finale del QAOA
+ result_decomposed = qaoa_noisy.solve(qp)
 \end{lstlisting}
 
-\mmerenda{
-In questa implementazione, è stato necessario eseguire il metodo \texttt{solve} 
-due volte. Questo perché Qiskit genera in automatico il circuito quantistico in 
-base al tipo di problema che gli viene fornito. La prima esecuzione di \texttt{solve} 
-viene utilizzata per generare il circuito, mentre la seconda esecuzione viene 
-effettuata dopo aver adattato il circuito al simulatore rumoroso.
-
-La Figura~\ref{fig:qaoa_noisy_circuit} rappresenta il circuito transpiled per il QAOA, 
-mentre i risultati, comprensivi della configurazione degli asset e della funzione 
-obiettivo, sono stati stampati tramite \texttt{print\_result}.
-}
+La Figura~\ref{fig:qaoa_noisy_circuit} mostra il circuito transpiled utilizzato 
+per il QAOA con rumore.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/circuitoVQEnoisy.png}
-    \caption{Circuito parametrizzato per il QAOA con rumore. \mmerenda{todo: mettere il circuito giusto (questo è il VQE noisy)}}
+    \includegraphics[width=0.8\textwidth]{images/circuitoQAOAnoisy.png}
+    \caption{Circuito a 4 qubit parametrizzato per il QAOA con rumore.}
     \label{fig:qaoa_noisy_circuit}
 \end{figure}
 
