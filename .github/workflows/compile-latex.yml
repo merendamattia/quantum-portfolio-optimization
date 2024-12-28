@@ -5,9 +5,7 @@ on:
   push:
     branches:
       - relazione-latex
-  pull_request:
-    branches:
-      - main
+      - dev
   workflow_dispatch:
 
 jobs:
@@ -39,9 +37,8 @@ jobs:
           cp relazione/main.pdf relazione.pdf
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
-          git pull origin dev
           git add relazione.pdf
           git commit -m "Aggiornata relazione (PDF)"
-          git push origin HEAD:dev
+          git push 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
