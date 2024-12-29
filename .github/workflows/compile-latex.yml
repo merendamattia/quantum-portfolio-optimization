@@ -38,7 +38,7 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
           git add relazione.pdf
-          git commit -m "Aggiornata relazione (PDF)"
+          git commit -m "[BOT] Aggiornata relazione"
           git push 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
