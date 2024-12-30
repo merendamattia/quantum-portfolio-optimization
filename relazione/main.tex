@@ -13,6 +13,7 @@
 
 % Useful packages
 \usepackage{amssymb}
+\usepackage{amsmath}
 \usepackage{siunitx}
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 \usepackage{cleveref}
@@ -31,6 +32,7 @@
 \usepackage{xcolor} % Load the xcolor package for color options
 \usepackage{listings}
 \usepackage{makecell}
+\usepackage{subcaption}
 
 \renewcommand{\thetable}{\Roman{table}}
 
@@ -223,7 +225,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Front Matter
 \author[1]{Colli Simone}
-\author[1]{Merenda Saverio Mattia}
+\author[2]{Merenda Saverio Mattia}
 
 \affil[1]{
     \url{simone.colli@studenti.unipr.it}
@@ -238,19 +240,28 @@
 \begin{document}
 \maketitle
 
+% utilizzato per debug
+% \linenumbers
+
 \input{sections/abstract}
-\linenumbers % utilizzato per debug
 \input{sections/intro}
+\input{sections/problema}
 \input{sections/algoritmi}
 \input{sections/qiskit}
 \input{sections/results}
 \input{sections/conclusion}
 
-\textit{Acknowledgments} \\
+\textit{Acknowledgments} \\ 
+Questo progetto è stato realizzato durante il corso di Quantum Computing 
+(a.a. 2024--25), presso l'Università degli Studi di Parma. 
+Il codice sorgente del progetto è disponibile su Github: 
+\begin{center}
+  \url{https://github.com/merendamattia/quantum-portfolio-optimization}.
+\end{center}
 
 \hfill
 
-% \break
-% \printbibliography
+\break
+\printbibliography
 
 \end{document}
