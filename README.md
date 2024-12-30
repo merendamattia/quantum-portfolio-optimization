@@ -50,6 +50,6 @@ Se utilizzi VScode, puoi installare l'estensione [Jupiter](https://marketplace.v
 
 Una volta fatto ciò, puoi impostare il kernel Jupiter su `localhost:8888`. Questo ti consente di eseguire il file Jupiter in locale.
 
-![1st step](./images/1.png)
-![2nd step](./images/2.png)
-![3rd step](./images/3.png)
+![1st step](./img/1.png)
+![2nd step](./img/2.png)
+![3rd step](./img/3.png)
