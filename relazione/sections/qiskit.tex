@@ -242,7 +242,9 @@ e applicato al simulatore quantistico \texttt{AerSimulator}:
      seed=seed,
      calibrate_instructions=True
  )
-
+ 
+ # ...
+ 
  # Generazione del modello di rumore
  noise_model = NoiseModel.from_backend(backend)
  simulator = AerSimulator(noise_model=noise_model)
